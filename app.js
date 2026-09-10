@@ -7,6 +7,26 @@
 (function () {
     'use strict';
 
+    const getClosest = (element, selector) => {
+        if (!element) return null;
+        if (typeof element.closest === 'function') return element.closest(selector);
+
+        let current = element;
+        while (current && current.nodeType === 1) {
+            const matches = current.matches || current.msMatchesSelector || current.webkitMatchesSelector;
+            if (matches && matches.call(current, selector)) return current;
+            current = current.parentElement;
+        }
+        return null;
+    };
+
+    const normalizeText = (value) => {
+        const text = String(value || '').toLowerCase();
+        return typeof text.normalize === 'function'
+            ? text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            : text;
+    };
+
     // =========================================================================
     // VOICE RECOGNIZER - Reconocimiento de voz mediante Web Speech API
     // =========================================================================
@@ -106,7 +126,7 @@
     // VOICE SYNTHESIZER - Síntesis de voz con SpeechSynthesis (Femenina Forzada)
     // =========================================================================
     const VoiceSynthesizer = {
-        synth: window.speechSynthesis,
+        synth: 'speechSynthesis' in window ? window.speechSynthesis : null,
         spanishFemaleVoice: null,
         speakingQueue: [],
         isSpeaking: false,
@@ -123,9 +143,9 @@
 
         scoreVoice(v) {
             let score = 0;
-            const lang = (v.lang || '').toLowerCase();
-            const name = (v.name || '').toLowerCase();
-            const uri = (v.voiceURI || '').toLowerCase();
+            const lang = normalizeText(v.lang);
+            const name = normalizeText(v.name);
+            const uri = normalizeText(v.voiceURI);
             const haystack = (name + ' ' + uri).toLowerCase();
 
             if (lang.startsWith('es')) {
@@ -151,7 +171,15 @@
                 const s = this.scoreVoice(v);
                 if (s > bestScore) { bestScore = s; best = v; }
             }
-            if (!best) best = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es')) || voices[0];
+            if (!best) {
+                for (const voice of voices) {
+                    if (normalizeText(voice.lang).startsWith('es')) {
+                        best = voice;
+                        break;
+                    }
+                }
+            }
+            if (!best) best = voices[0];
             this.spanishFemaleVoice = best;
         },
 
@@ -159,11 +187,9 @@
             if (!this.synth) return;
             this.loadVoicesInternal();
             this.synth.onvoiceschanged = () => this.loadVoicesInternal();
-            if (typeof this.synth.onvoiceschanged !== 'function' || !this.spanishFemaleVoice) {
-                setTimeout(() => this.loadVoicesInternal(), 200);
-                setTimeout(() => this.loadVoicesInternal(), 800);
-                setTimeout(() => this.loadVoicesInternal(), 1500);
-            }
+            setTimeout(() => this.loadVoicesInternal(), 200);
+            setTimeout(() => this.loadVoicesInternal(), 800);
+            setTimeout(() => this.loadVoicesInternal(), 1500);
         },
 
         speak(text, onStart, onEnd) {
@@ -172,7 +198,11 @@
                 return;
             }
             this.synth.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
+            if (typeof window.SpeechSynthesisUtterance !== 'function') {
+                onEnd && onEnd();
+                return;
+            }
+            const utterance = new window.SpeechSynthesisUtterance(text);
             utterance.lang = 'es-ES';
             utterance.rate = 0.98;
             utterance.pitch = 1.28;
@@ -439,8 +469,8 @@
                 const expandBtn = fc.querySelector('.floor-expand-btn');
                 const header = fc.querySelector('.floor-header');
                 const toggleExpand = (e) => {
-                    if (e && e.target.closest('.device-toggle')) return;
-                    if (e && e.target.closest('.floor-expand-btn')) {
+                    if (e && getClosest(e.target, '.device-toggle')) return;
+                    if (e && getClosest(e.target, '.floor-expand-btn')) {
                         e.stopPropagation();
                         fc.classList.toggle('open');
                         return;
@@ -458,7 +488,7 @@
                 if (!card) return;
                 card.addEventListener('click', (ev) => {
                     // Evitar toggle si fue click en expand btn o toggle
-                    if (ev.target.closest('.floor-expand-btn')) { ev.stopPropagation(); return; }
+                    if (getClosest(ev.target, '.floor-expand-btn')) { ev.stopPropagation(); return; }
                     ev.stopPropagation();
                     const res = this.toggleDevice(k);
                     ConversationHistory.add('system',
@@ -475,7 +505,7 @@
 
         resolveEnvironmentAlias(alias, floorContext) {
             alias = (alias || '').toLowerCase().trim();
-            const normalizedAlias = alias.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
+            const normalizedAlias = normalizeText(alias).replace(/\s+/g, ' ');
             // Si contexto piso, buscar alias + contexto de piso ej "cocina piso 2" → buscar floor2-
             let matchedAlias = normalizedAlias;
             let envKey = this.environmentMapByAlias[matchedAlias];
@@ -645,9 +675,7 @@
     // =========================================================================
     const CommandParser = {
         normalize(text) {
-            return text
-                .toLowerCase()
-                .normalize('NFD')
+            return normalizeText(text)
                 .replace(/[\u0300-\u036f]/g, '')
                 .replace(/[¿?¡!.,;:"'\-_]/g, ' ')
                 .replace(/\s+/g, ' ')
@@ -1090,9 +1118,14 @@
                 this.transcriptionEl.textContent = '⚠ Navegador no compatible. Usa Chrome o Edge.';
                 this.transcriptionEl.style.color = '#e63946';
             }
+            if (!ok && this.micBtn) {
+                this.micBtn.setAttribute('aria-disabled', 'true');
+                this.micBtn.title = 'El reconocimiento de voz no está disponible en este navegador';
+            }
 
             if (this.micBtn) {
                 this.micBtn.addEventListener('click', () => {
+                    if (!ok) return;
                     VoiceRecognizer.toggle();
                 });
             }
