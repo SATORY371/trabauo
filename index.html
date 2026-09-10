@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Asistente de Voz para Control Domótico">
+    <title>Keyla - Asistente Domótico por Voz</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234361ee'%3E%3Cpath d='M12 2a7 7 0 00-7 7v5a7 7 0 0014 0V9a7 7 0 00-7-7zm-1 5.5a1 1 0 112 0V11a1 1 0 11-2 0V7.5zM7 22h10v1H7v-1z'/%3E%3C/svg%3E">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon">🏠</div>
+                <div class="logo-text">
+                    <h1>Keyla</h1>
+                    <p>Tu asistente domótico por voz</p>
+                </div>
+            </div>
+            <div class="status-indicator" id="statusIndicator">
+                <span class="status-dot"></span>
+                <span class="status-text" id="statusText">Listo</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="voice-control">
+                <button class="mic-btn" id="micBtn" aria-label="Activar micrófono">
+                    <span class="mic-icon" id="micIcon">🎙️</span>
+                    <span class="mic-ring"></span>
+                    <span class="mic-ring mic-ring-2"></span>
+                </button>
+                <p class="voice-hint" id="voiceHint">Haz clic en el micrófono y empieza a hablar</p>
+                <p class="transcription" id="transcription"></p>
+            </section>
+
+            <section class="dashboard">
+                <h2 class="section-title">📍 Control de Pisos (con ambientes independientes)</h2>
+                <div class="floors-accordion" id="floorsAccordion">
+
+                    <div class="floor-card" data-floor="1">
+                        <div class="floor-header device-card" data-device="floor1">
+                            <div class="device-icon">🏠</div>
+                            <div class="device-info">
+                                <h3>Piso 1 · Planta Baja</h3>
+                                <p class="device-status" id="status-floor1">Apagado</p>
+                            </div>
+                            <div class="device-toggle"></div>
+                            <button class="floor-expand-btn" aria-label="Ver ambientes">▾</button>
+                        </div>
+                        <div class="floor-body">
+                            <div class="sub-devices-grid">
+                                <div class="sub-device-card" data-device="floor1-cochera">
+                                    <span class="sd-icon">🚗</span>
+                                    <div class="sd-info"><h4>Cochera</h4><small class="sd-status" id="status-floor1-cochera">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor1-banos">
+                                    <span class="sd-icon">🚿</span>
+                                    <div class="sd-info"><h4>Baños Sociales</h4><small class="sd-status" id="status-floor1-banos">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor1-hall">
+                                    <span class="sd-icon">🚪</span>
+                                    <div class="sd-info"><h4>Hall de Entrada</h4><small class="sd-status" id="status-floor1-hall">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor1-comedor">
+                                    <span class="sd-icon">🍽️</span>
+                                    <div class="sd-info"><h4>Comedor Diario</h4><small class="sd-status" id="status-floor1-comedor">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor1-lavanderia">
+                                    <span class="sd-icon">🧺</span>
+                                    <div class="sd-info"><h4>Lavandería / Depósito</h4><small class="sd-status" id="status-floor1-lavanderia">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor1-pasillos">
+                                    <span class="sd-icon">💡</span>
+                                    <div class="sd-info"><h4>Pasillos</h4><small class="sd-status" id="status-floor1-pasillos">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="floor-card" data-floor="2">
+                        <div class="floor-header device-card" data-device="floor2">
+                            <div class="device-icon">🏡</div>
+                            <div class="device-info">
+                                <h3>Piso 2 · Social</h3>
+                                <p class="device-status" id="status-floor2">Apagado</p>
+                            </div>
+                            <div class="device-toggle"></div>
+                            <button class="floor-expand-btn" aria-label="Ver ambientes">▾</button>
+                        </div>
+                        <div class="floor-body">
+                            <div class="sub-devices-grid">
+                                <div class="sub-device-card" data-device="floor2-cocina">
+                                    <span class="sd-icon">👩‍🍳</span>
+                                    <div class="sd-info"><h4>Cocina</h4><small class="sd-status" id="status-floor2-cocina">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor2-sala">
+                                    <span class="sd-icon">🛋️</span>
+                                    <div class="sd-info"><h4>Sala Principal</h4><small class="sd-status" id="status-floor2-sala">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor2-comedor">
+                                    <span class="sd-icon">🍽️</span>
+                                    <div class="sd-info"><h4>Comedor Principal</h4><small class="sd-status" id="status-floor2-comedor">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor2-hab1">
+                                    <span class="sd-icon">🛏️</span>
+                                    <div class="sd-info"><h4>Habitación 1</h4><small class="sd-status" id="status-floor2-hab1">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor2-hab2">
+                                    <span class="sd-icon">🛏️</span>
+                                    <div class="sd-info"><h4>Habitación 2</h4><small class="sd-status" id="status-floor2-hab2">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor2-bano">
+                                    <span class="sd-icon">🚿</span>
+                                    <div class="sd-info"><h4>Baño Piso 2</h4><small class="sd-status" id="status-floor2-bano">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="floor-card" data-floor="3">
+                        <div class="floor-header device-card" data-device="floor3">
+                            <div class="device-icon">🏢</div>
+                            <div class="device-info">
+                                <h3>Piso 3 · Habitacional</h3>
+                                <p class="device-status" id="status-floor3">Apagado</p>
+                            </div>
+                            <div class="device-toggle"></div>
+                            <button class="floor-expand-btn" aria-label="Ver ambientes">▾</button>
+                        </div>
+                        <div class="floor-body">
+                            <div class="sub-devices-grid">
+                                <div class="sub-device-card" data-device="floor3-habprincipal">
+                                    <span class="sd-icon">🛏️</span>
+                                    <div class="sd-info"><h4>Habitación Principal</h4><small class="sd-status" id="status-floor3-habprincipal">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor3-banoprincipal">
+                                    <span class="sd-icon">🛁</span>
+                                    <div class="sd-info"><h4>Baño Principal</h4><small class="sd-status" id="status-floor3-banoprincipal">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor3-vestidor">
+                                    <span class="sd-icon">👗</span>
+                                    <div class="sd-info"><h4>Vestidor</h4><small class="sd-status" id="status-floor3-vestidor">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor3-salaestar">
+                                    <span class="sd-icon">🛋️</span>
+                                    <div class="sd-info"><h4>Sala de Estar</h4><small class="sd-status" id="status-floor3-salaestar">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor3-balcon">
+                                    <span class="sd-icon">🌆</span>
+                                    <div class="sd-info"><h4>Balcón</h4><small class="sd-status" id="status-floor3-balcon">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor3-pasillos">
+                                    <span class="sd-icon">💡</span>
+                                    <div class="sd-info"><h4>Pasillos</h4><small class="sd-status" id="status-floor3-pasillos">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="floor-card" data-floor="4">
+                        <div class="floor-header device-card" data-device="floor4">
+                            <div class="device-icon">🏬</div>
+                            <div class="device-info">
+                                <h3>Piso 4 · Familiar</h3>
+                                <p class="device-status" id="status-floor4">Apagado</p>
+                            </div>
+                            <div class="device-toggle"></div>
+                            <button class="floor-expand-btn" aria-label="Ver ambientes">▾</button>
+                        </div>
+                        <div class="floor-body">
+                            <div class="sub-devices-grid">
+                                <div class="sub-device-card" data-device="floor4-hab3">
+                                    <span class="sd-icon">🛏️</span>
+                                    <div class="sd-info"><h4>Habitación 3</h4><small class="sd-status" id="status-floor4-hab3">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor4-hab4">
+                                    <span class="sd-icon">🛏️</span>
+                                    <div class="sd-info"><h4>Habitación 4</h4><small class="sd-status" id="status-floor4-hab4">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor4-bano">
+                                    <span class="sd-icon">🚿</span>
+                                    <div class="sd-info"><h4>Baño Compartido</h4><small class="sd-status" id="status-floor4-bano">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor4-salajuegos">
+                                    <span class="sd-icon">🎮</span>
+                                    <div class="sd-info"><h4>Sala de Juegos</h4><small class="sd-status" id="status-floor4-salajuegos">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor4-estudio">
+                                    <span class="sd-icon">📚</span>
+                                    <div class="sd-info"><h4>Estudio / Biblioteca</h4><small class="sd-status" id="status-floor4-estudio">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor4-terraza">
+                                    <span class="sd-icon">🌳</span>
+                                    <div class="sd-info"><h4>Terraza Piso 4</h4><small class="sd-status" id="status-floor4-terraza">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="floor-card" data-floor="5">
+                        <div class="floor-header device-card" data-device="floor5">
+                            <div class="device-icon">🏙️</div>
+                            <div class="device-info">
+                                <h3>Piso 5 · Penthouse</h3>
+                                <p class="device-status" id="status-floor5">Apagado</p>
+                            </div>
+                            <div class="device-toggle"></div>
+                            <button class="floor-expand-btn" aria-label="Ver ambientes">▾</button>
+                        </div>
+                        <div class="floor-body">
+                            <div class="sub-devices-grid">
+                                <div class="sub-device-card" data-device="floor5-gimnasio">
+                                    <span class="sd-icon">🏋️</span>
+                                    <div class="sd-info"><h4>Gimnasio</h4><small class="sd-status" id="status-floor5-gimnasio">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor5-salon">
+                                    <span class="sd-icon">🥂</span>
+                                    <div class="sd-info"><h4>Salón de Reuniones</h4><small class="sd-status" id="status-floor5-salon">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor5-bar">
+                                    <span class="sd-icon">🍸</span>
+                                    <div class="sd-info"><h4>Bar</h4><small class="sd-status" id="status-floor5-bar">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor5-bano">
+                                    <span class="sd-icon">🚿</span>
+                                    <div class="sd-info"><h4>Baño Visitas</h4><small class="sd-status" id="status-floor5-bano">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor5-terraza">
+                                    <span class="sd-icon">🌇</span>
+                                    <div class="sd-info"><h4>Terraza Panorámica</h4><small class="sd-status" id="status-floor5-terraza">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                                <div class="sub-device-card" data-device="floor5-servicio">
+                                    <span class="sd-icon">🧰</span>
+                                    <div class="sd-info"><h4>Cuarto de Servicio</h4><small class="sd-status" id="status-floor5-servicio">Apagado</small></div>
+                                    <div class="device-toggle small"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <h2 class="section-title">🌳 Exteriores y Red</h2>
+                <div class="devices-grid outdoors-grid" id="outdoorsGrid">
+                    <div class="device-card" data-device="patio">
+                        <div class="device-icon">🌿</div>
+                        <div class="device-info">
+                            <h3>Patio</h3>
+                            <p class="device-status" id="status-patio">Apagado</p>
+                        </div>
+                        <div class="device-toggle"></div>
+                    </div>
+                    <div class="device-card" data-device="wifi">
+                        <div class="device-icon">📶</div>
+                        <div class="device-info">
+                            <h3>WiFi</h3>
+                            <p class="device-status" id="status-wifi">Apagado</p>
+                        </div>
+                        <div class="device-toggle"></div>
+                    </div>
+                </div>
+
+                <h2 class="section-title">🔌 Dispositivos Adicionales</h2>
+                <div class="devices-grid extra-grid" id="extraGrid">
+                    <div class="device-card" data-device="ventilador">
+                        <div class="device-icon">🌀</div>
+                        <div class="device-info">
+                            <h3>Ventilador</h3>
+                            <p class="device-status" id="status-ventilador">Apagado</p>
+                        </div>
+                        <div class="device-toggle"></div>
+                    </div>
+                    <div class="device-card" data-device="tv">
+                        <div class="device-icon">📺</div>
+                        <div class="device-info">
+                            <h3>Televisión</h3>
+                            <p class="device-status" id="status-tv">Apagado</p>
+                        </div>
+                        <div class="device-toggle"></div>
+                    </div>
+                    <div class="device-card" data-device="ac">
+                        <div class="device-icon">❄️</div>
+                        <div class="device-info">
+                            <h3>Aire Acondicionado</h3>
+                            <p class="device-status" id="status-ac">Apagado</p>
+                        </div>
+                        <div class="device-toggle"></div>
+                    </div>
+                    <div class="device-card" data-device="cafetera">
+                        <div class="device-icon">☕</div>
+                        <div class="device-info">
+                            <h3>Cafetera</h3>
+                            <p class="device-status" id="status-cafetera">Apagado</p>
+                        </div>
+                        <div class="device-toggle"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="conversation-panel">
+                <h2 class="section-title">💬 Historial de Conversación</h2>
+                <div class="chat-history" id="chatHistory">
+                    <div class="chat-message assistant-msg">
+                        <div class="msg-bubble">
+                            <span class="msg-sender">Keyla</span>
+                            <p>Hola soy Keyla estoy lista para asistirte. Haz clic en el botón del micrófono y dime qué necesitas. Prueba diciendo: "Buenos días", "Encender luz del piso 3" o "Ayuda" para conocer todas mis funciones.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>💡 Consejo: Usa Chrome o Edge para mejor experiencia con el reconocimiento de voz. Asegúrate de permitir el acceso al micrófono.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
